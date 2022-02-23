@@ -6,25 +6,68 @@
 /*   By: linuxlite <linuxlite@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:50:39 by linuxlite         #+#    #+#             */
-/*   Updated: 2022/02/23 14:11:16 by linuxlite        ###   ########.fr       */
+/*   Updated: 2022/02/23 17:54:18 by linuxlite        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wordle.h"
 
+void	process_word(t_alphabet *abc, t_word **dictionary, char *guess, char *response, char* extra_characters)
+{
+	int i;
+	
+	i = 0;
+	while (i < 5)
+		abc->alphabet[response[i++] - 'a'] = '+';
+	while (*extra_characters)
+		abc->alphabet[*extra_characters++ - 'a'] = '?';
+	i = 0;
+	while (i < 26)
+	{
+		if (abc->alphabet[i] == '+' || abc->alphabet[i] == '?')
+			dictionary = exclude_words_lacking_letter(dictionary, 'a' + i);
+		i++;
+	}
+	i = 0;
+	while (i < 5)
+	{
+		if (!abc->alphabet[guess[i] - 'a'] || abc->alphabet[guess[i] - 'a'] == '!')
+		{
+			dictionary = exclude_words_containing_letter(dictionary, guess[i]);
+			abc->alphabet[guess[i] - 'a'] = '!';
+		}
+		i++;
+	}
+	dictionary = exclude_words(dictionary, response);
+	print_alphabet(abc);
+	ft_putendl(find_best_word(dictionary));
+}
+
 int main(int argc, char **argv)
 { 
-    t_word	**dictionary;
+    static t_word		**dictionary;
+	static t_alphabet	*abc;
+	char				*input;
+	char				*output;
+	char				*extras;
 
+	input = ft_strnew(5);
+	output = ft_strnew(5);
+	extras = ft_strnew(5);
 	if (argc != 2)
 		ft_putstr("Wrong number of args.");
 	dictionary = read_dictionary(argv);
-	print_dictionary(dictionary);
-	ft_putstr("\nbest word: ");
-	ft_putstr(find_best_word(dictionary));
-	dictionary = exclude_words(dictionary, "-ee--");
-	ft_putstr("\nnew best word: ");
-	ft_putstr(find_best_word(dictionary));
+	abc = t_alphabet_new(26);
+	while (ft_strcmp(input, "quit"))
+	{
+		ft_putendl("GIVE GUESSED WORD");
+		scanf("%s", input);
+		ft_putendl("GIVE RESPONSE");
+		scanf("%s", output);
+		ft_putendl("GIVE EXTRA CHARACTERS");
+		scanf("%s", extras);
+		process_word(abc, dictionary, input, output, extras);
+	}
 
 	return (0);
 }

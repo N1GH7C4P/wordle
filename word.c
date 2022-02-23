@@ -6,7 +6,7 @@
 /*   By: linuxlite <linuxlite@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 12:16:56 by linuxlite         #+#    #+#             */
-/*   Updated: 2022/02/23 14:02:43 by linuxlite        ###   ########.fr       */
+/*   Updated: 2022/02/23 17:52:29 by linuxlite        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,12 +112,56 @@ char *find_best_word(t_word **dictionary)
 	return (best_word);
 }
 
-t_word	**exclude_words(t_word **dictionary, char *template)
+t_word	**exclude_words_containing_letter(t_word **dictionary, char c)
 {
-	int i, j, words_exluded;
+	int i, j;
 
 	i = 0;
-	words_exluded = 0;
+	while (i < 2315)
+	{
+		j = 0;
+		while (j < 5)
+		{
+			if (dictionary[i]->word[j] == c)
+			{
+				dictionary[i]->excluded = 1;
+				break ;
+			}
+			j++;
+		}
+		i++;
+	}
+	return (dictionary);
+}
+
+t_word	**exclude_words_lacking_letter(t_word **dictionary, char c)
+{
+	int i, j;
+
+	i = 0;
+	while (i < 2315)
+	{
+		j = 0;
+		while (j < 5)
+		{
+			if (dictionary[i]->word[j] == c)
+				break ;
+			else if(j == 4)
+			{
+				dictionary[i]->excluded = 1;
+			}
+			j++;
+		}
+		i++;
+	}
+	return (dictionary);
+}
+
+t_word	**exclude_words(t_word **dictionary, char *template)
+{
+	int i, j;
+
+	i = 0;
 	while (i < 2315)
 	{
 		j = 0;
@@ -125,17 +169,11 @@ t_word	**exclude_words(t_word **dictionary, char *template)
 		{
 			if (!(dictionary[i]->word[j] == template[j] || template[j] == '-'))
 			{
-				words_exluded++;
-				ft_putstr("excluding: ");
-				ft_putendl(dictionary[i]->word);
 				dictionary[i]->excluded = 1;
 				break ;
 			}
 			j++;
 		}
-		ft_putstr("words excluded: ");
-		ft_putnbr(words_exluded);
-		ft_putendl("");
 		i++;
 	}
 	return (dictionary);
