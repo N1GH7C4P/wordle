@@ -1,30 +1,87 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   word.c                                             :+:      :+:    :+:   */
+/*   scoring.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: linuxlite <linuxlite@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/23 12:16:56 by linuxlite         #+#    #+#             */
-/*   Updated: 2022/02/23 17:52:29 by linuxlite        ###   ########.fr       */
+/*   Created: 2022/02/24 13:52:44 by linuxlite         #+#    #+#             */
+/*   Updated: 2022/02/24 15:45:03 by linuxlite        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wordle.h"
 
-int	score_word(char *word)
+void print_words_with_score_n(t_word **dictionary, int n)
 {
-	int i;
+	int		i;
+
+	i = 0;
+	while (i++ < 2314)
+	{
+		if (dictionary[i]->score == n && !dictionary[i]->excluded)
+			ft_putendl(dictionary[i]->word);
+	}
+}
+
+int find_biggest_score(t_word **dictionary)
+{
+	int		high_score;
+	int		i;
+
+	high_score = 0;
+	i = 0;
+	while (i++ < 2314)
+	{
+		if (dictionary[i]->score > high_score && !dictionary[i]->excluded)
+			high_score = dictionary[i]->score;
+	}
+	return (high_score);
+}
+
+char *find_best_word(t_word **dictionary)
+{
+	int		high_score;
+	int		i;
+	char	*best_word;
+
+	high_score = 0;
+	i = 0;
+	while (i++ < 2314)
+	{
+		if (dictionary[i]->score > high_score && !dictionary[i]->excluded)
+		{
+			high_score = dictionary[i]->score;
+			best_word = ft_strdup(dictionary[i]->word);
+		}
+	}
+	return (best_word);
+}
+
+int	score_word(char *word, char* template, char* extras)
+{
+	int i, j;
 	int score;
 	char *prevs;
+	int extra_in_word;
 
 	prevs = ft_strnew(5);
 	score = 0;
 	i = 0;
 	while(i++ < 5)
 	{
-		if (word[i] == prevs[0] || word[i] == prevs[1] || word[i] == prevs[2] || word[i] == prevs[3])
+		extra_in_word = 0;
+		if (template[i] != '-')
 			continue ;
+		if (word[i] == prevs[0] || word[i] == prevs[1] || word[i] == prevs[2] || word[i] == prevs[3])
+		{
+			j = 0;
+			while(extras[j])
+				if (extras[j++] == word[i])
+					extra_in_word = 1;
+			if(!extra_in_word)
+				continue ;
+		}
 		else if (word[i] == 'e')
 			score += 26;
 		else if (word[i] == 's')
@@ -80,101 +137,4 @@ int	score_word(char *word)
 		prevs[i] = word[i];
 	}
 	return (score);
-}
-
-t_word *t_word_new(char *str, int score)
-{
-	t_word *new_word;
-
-	new_word = (t_word *)malloc(sizeof(t_word *));
-	new_word->word = ft_strdup(str);
-	new_word->score = score;
-
-	return (new_word);
-}
-
-char *find_best_word(t_word **dictionary)
-{
-	int		high_score;
-	int		i;
-	char	*best_word;
-
-	high_score = 0;
-	i = 0;
-	while (i++ < 2314)
-	{
-		if (dictionary[i]->score > high_score && !dictionary[i]->excluded)
-		{
-			high_score = dictionary[i]->score;
-			best_word = ft_strdup(dictionary[i]->word);
-		}
-	}
-	return (best_word);
-}
-
-t_word	**exclude_words_containing_letter(t_word **dictionary, char c)
-{
-	int i, j;
-
-	i = 0;
-	while (i < 2315)
-	{
-		j = 0;
-		while (j < 5)
-		{
-			if (dictionary[i]->word[j] == c)
-			{
-				dictionary[i]->excluded = 1;
-				break ;
-			}
-			j++;
-		}
-		i++;
-	}
-	return (dictionary);
-}
-
-t_word	**exclude_words_lacking_letter(t_word **dictionary, char c)
-{
-	int i, j;
-
-	i = 0;
-	while (i < 2315)
-	{
-		j = 0;
-		while (j < 5)
-		{
-			if (dictionary[i]->word[j] == c)
-				break ;
-			else if(j == 4)
-			{
-				dictionary[i]->excluded = 1;
-			}
-			j++;
-		}
-		i++;
-	}
-	return (dictionary);
-}
-
-t_word	**exclude_words(t_word **dictionary, char *template)
-{
-	int i, j;
-
-	i = 0;
-	while (i < 2315)
-	{
-		j = 0;
-		while (j < 5)
-		{
-			if (!(dictionary[i]->word[j] == template[j] || template[j] == '-'))
-			{
-				dictionary[i]->excluded = 1;
-				break ;
-			}
-			j++;
-		}
-		i++;
-	}
-	return (dictionary);
 }

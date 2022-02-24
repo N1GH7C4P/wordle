@@ -6,7 +6,7 @@
 /*   By: linuxlite <linuxlite@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 10:50:39 by linuxlite         #+#    #+#             */
-/*   Updated: 2022/02/23 17:54:18 by linuxlite        ###   ########.fr       */
+/*   Updated: 2022/02/24 16:09:50 by linuxlite        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,13 @@ void	process_word(t_alphabet *abc, t_word **dictionary, char *guess, char *respo
 {
 	int i;
 	
+	i = 0;
+	while (i < 5)
+	{
+		if (response[i] == '-')
+			dictionary = exclude_words_containing_letter_in_postion_n(dictionary, guess[i], i);
+		i++;
+	}
 	i = 0;
 	while (i < 5)
 		abc->alphabet[response[i++] - 'a'] = '+';
@@ -31,16 +38,25 @@ void	process_word(t_alphabet *abc, t_word **dictionary, char *guess, char *respo
 	i = 0;
 	while (i < 5)
 	{
-		if (!abc->alphabet[guess[i] - 'a'] || abc->alphabet[guess[i] - 'a'] == '!')
+		if (!abc->alphabet[guess[i] - 'a'] || abc->alphabet[guess[i] - 'a'] == '!' || abc->alphabet[guess[i] - 'a'] == '+')
 		{
-			dictionary = exclude_words_containing_letter(dictionary, guess[i]);
+			dictionary = exclude_words_containing_letter(dictionary, guess[i], response);
 			abc->alphabet[guess[i] - 'a'] = '!';
 		}
 		i++;
 	}
 	dictionary = exclude_words(dictionary, response);
 	print_alphabet(abc);
-	ft_putendl(find_best_word(dictionary));
+	i = 0;
+	while (i < 2315)
+	{
+		dictionary[i]->score = score_word(dictionary[i]->word, response, extra_characters);
+		i++;
+	}
+	ft_putendl("all valid wods: ");
+	print_valid_words(dictionary);
+	ft_putendl("best word(s): ");
+	print_words_with_score_n(dictionary, find_biggest_score(dictionary));
 }
 
 int main(int argc, char **argv)
@@ -58,32 +74,33 @@ int main(int argc, char **argv)
 		ft_putstr("Wrong number of args.");
 	dictionary = read_dictionary(argv);
 	abc = t_alphabet_new(26);
-	while (ft_strcmp(input, "quit"))
+	while (ft_strcmp(input, "pquit"))
 	{
-		ft_putendl("GIVE GUESSED WORD");
+		ft_putendl("Give the word you guessed (lower case)");
 		scanf("%s", input);
-		ft_putendl("GIVE RESPONSE");
+		if (ft_strlen(input) != 5)
+		{
+			ft_putendl("invalid input!");
+			continue ;
+		}
+		ft_putendl("Give the response you received. (example: '-a--e')");
 		scanf("%s", output);
-		ft_putendl("GIVE EXTRA CHARACTERS");
+		if (ft_strlen(output) != 5)
+		{
+			ft_putendl("invalid input!");
+			continue ;
+		}
+		if(!ft_strcmp(input, output))
+		{
+			ft_putendl("You found the right word! Congratulazions!");
+			return(1);
+		}
+		ft_putendl("Give the unlocated characters found or '.' if there are none.");
 		scanf("%s", extras);
 		process_word(abc, dictionary, input, output, extras);
 	}
 
 	return (0);
-}
-
-void print_dictionary(t_word **dictionary)
-{
-	int i;
-
-	i = 0;
-	while (i++ < 2314)
-	{
-		ft_putstr(dictionary[i]->word);
-		ft_putchar(' ');
-		ft_putnbr(dictionary[i]->score);
-		ft_putendl("");
-	}
 }
 
 t_word **read_dictionary(char **argv)
@@ -92,8 +109,10 @@ t_word **read_dictionary(char **argv)
     int     ret;
     int     i;
     char    *line;
+	char	*template;
 	t_word	**dictionary;
 
+	template = ft_strdup("-----");
 	dictionary = (t_word **)malloc(sizeof(t_word *) * 2315);
     fd = open(argv[1], O_RDONLY);
     ret = ft_get_next_line(fd, &line);
@@ -101,7 +120,7 @@ t_word **read_dictionary(char **argv)
     while(ret >= -2)
     {
 		if (line)
-			dictionary[i] = t_word_new(line, score_word(line));
+			dictionary[i] = t_word_new(line, score_word(line, template, ""));
 		i++;
         ret = ft_get_next_line(fd, &line);
         if(ret < 1)

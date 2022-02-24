@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: spuustin <spuustin@student.42.fr>          +#+  +:+       +#+         #
+#    By: linuxlite <linuxlite@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/02 11:15:37 by kpolojar          #+#    #+#              #
-#    Updated: 2022/01/13 14:07:43 by spuustin         ###   ########.fr        #
+#    Updated: 2022/02/24 16:24:02 by linuxlite        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ CC = clang
 NAME = libft.a
 
 
-CFLAGS = -Wall -Werror -Wextra #-fsanitize=address -g
+CFLAGS = -Wall -Werror -Wextra -fpie #-fsanitize=address -g
 
 FTS = strlen strdup strcpy strncpy strcat strncat strlcat strchr \
     strrchr strstr strnstr strcmp strncmp isdigit atoi isalpha isalnum \
