@@ -6,7 +6,7 @@
 /*   By: linuxlite <linuxlite@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/24 13:52:44 by linuxlite         #+#    #+#             */
-/*   Updated: 2022/02/24 15:45:03 by linuxlite        ###   ########.fr       */
+/*   Updated: 2022/02/24 22:10:25 by linuxlite        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,23 +47,24 @@ char *find_best_word(t_word **dictionary)
 
 	high_score = 0;
 	i = 0;
-	while (i++ < 2314)
+	while (i < 2315)
 	{
 		if (dictionary[i]->score > high_score && !dictionary[i]->excluded)
 		{
 			high_score = dictionary[i]->score;
-			best_word = ft_strdup(dictionary[i]->word);
+			best_word = dictionary[i]->word;
 		}
+		i++;
 	}
 	return (best_word);
 }
 
 int	score_word(char *word, char* template, char* extras)
 {
-	int i, j;
-	int score;
-	char *prevs;
-	int extra_in_word;
+	int		i, j;
+	int		score;
+	char	*prevs;
+	int		extra_in_word;
 
 	prevs = ft_strnew(5);
 	score = 0;
@@ -77,8 +78,10 @@ int	score_word(char *word, char* template, char* extras)
 		{
 			j = 0;
 			while(extras[j])
+			{
 				if (extras[j++] == word[i])
 					extra_in_word = 1;
+			}
 			if(!extra_in_word)
 				continue ;
 		}
@@ -136,5 +139,6 @@ int	score_word(char *word, char* template, char* extras)
 			score += 1;
 		prevs[i] = word[i];
 	}
+	free(prevs);
 	return (score);
 }

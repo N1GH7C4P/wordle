@@ -6,16 +6,16 @@
 /*   By: linuxlite <linuxlite@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 15:43:21 by linuxlite         #+#    #+#             */
-/*   Updated: 2022/02/24 15:56:33 by linuxlite        ###   ########.fr       */
+/*   Updated: 2022/02/24 20:45:27 by linuxlite        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wordle.h"
 
-t_alphabet *t_alphabet_new(int size)
+t_alphabet *t_alphabet_new(void)
 {
 	t_alphabet *new_alphabet = (t_alphabet *)malloc(sizeof(t_alphabet *));
-	new_alphabet->alphabet = ft_strnew(size);
+	new_alphabet->alphabet = ft_strnew(26);
 	return (new_alphabet);
 }
 
