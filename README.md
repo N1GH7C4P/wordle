@@ -17,7 +17,7 @@ Follow the instructions on your terminal to play the game.
 A tool that helps you win the game in as few guesses as possible. Uses letter frequencies in english language 
 (https://en.wikipedia.org/wiki/Letter_frequency)
 And the information revealed by previous guesses to calculate all possible answers and the optimal one.
-
+```
 cd helper
 make
 ./helper
